@@ -1,0 +1,22 @@
+DEFINE ID NUM 
+
+VOID ID ( INT ID [ ] [ ID ] , INT ID [ ] [ ID ] , INT ID [ ] [ ID ] ) { 
+INT ID , ID , ID ; 
+
+FOR ( ID OP_ASSIGN NUM ; ID OP_REL ID ; ID OP_INC ) { 
+FOR ( ID OP_ASSIGN NUM ; ID OP_REL ID ; ID OP_INC ) { 
+ID [ ID ] [ ID ] OP_ASSIGN NUM ; comment 
+
+IF ( ID OP_REL NUM OP_LOGIC ID OP_REL NUM ) 
+ID ; 
+
+FOR ( ID OP_ASSIGN NUM ; ID OP_REL ID ; ID OP_INC ) { 
+IF ( ID [ ID ] [ ID ] OP_REL NUM OP_LOGIC ID [ ID ] [ ID ] OP_REL NUM ) 
+ID ; comment 
+
+comment 
+ID [ ID ] [ ID ] OP_ASSIGN ID [ ID ] [ ID ] OP_MUL ID [ ID ] [ ID ] ; 
+} 
+} 
+} 
+} 
