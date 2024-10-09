@@ -112,20 +112,25 @@ func_arg_dec:
 body:
 	clause     	
 					{
-							$$ = $1;
+							$$ = MakeNode("body");
+							InsertChild($$, $1);  // clause 추가
 					}
 	|statement 	
 					{
-							$$ = $1;
+							$$ = MakeNode("body");
+							InsertChild($$, $1);  // statement 추가
 					}
 	|body body 	
 					{
-							$$ = $1;
+							// 두 개의 body를 포함하는 새로운 노드를 생성
+							$$ = MakeNode("body");
+							InsertChild($$, $1);
+							InsertChild($$, $2);  // 두 번째 body 추가
 					}
 	;
 
 clause: 
-    FOR LPAREN init_stmt test_expr SEMICOLON update_stmt RPAREN LBRACE body RBRACE 	
+    FOR LPAREN init_stmt test_expr SEMICOLON update_stmt RPAREN LBRACE body RBRACE 
 					{
 							// "FOR" 노드를 루트로 생성
 							$$ = MakeNode("FOR");
@@ -142,7 +147,7 @@ clause:
 							InsertChild($$, MakeNode("RBRACE"));  // "}" 노드
 					}
 
-    |IF LPAREN test_expr RPAREN LBRACE body RBRACE 			
+    | IF LPAREN test_expr RPAREN LBRACE body RBRACE 
 					{
 							// "IF" 노드를 루트로 생성
 							$$ = MakeNode("IF");
@@ -153,12 +158,12 @@ clause:
 							InsertChild($$, MakeNode("RPAREN"));  // ")" 노드
 							InsertChild($$, MakeNode("LBRACE"));  // "{" 노드
 							InsertChild($$, $6);  // body 노드
-							InsertChild($$, MakeNode("RBRACE"));  // "{" 노드
+							InsertChild($$, MakeNode("RBRACE"));  // "}" 노드
 					}
 
-    |IF LPAREN test_expr RPAREN statement 			
+    | IF LPAREN test_expr RPAREN statement 
 					{
-														// "IF" 노드를 루트로 생성
+							// "IF" 노드를 루트로 생성
 							$$ = MakeNode("IF");
 							
 							// 각 자식 노드를 트리에 추가
@@ -167,7 +172,7 @@ clause:
 							InsertChild($$, MakeNode("RPAREN"));  // ")" 노드
 							InsertChild($$, $5);  // statement 노드
 					}
-	;
+    ;
 
 statement:
     assign_stmt SEMICOLON  	

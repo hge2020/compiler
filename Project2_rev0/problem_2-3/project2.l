@@ -24,14 +24,14 @@ continue                                            {yylval.string=strdup(yytext
 "&&"|"||"							                {yylval.string=strdup(yytext); return OP_LOGIC;}
 "!="|"=="|"<"|">"|"<="|">="						    {yylval.string=strdup(yytext); return OP_REL;}
 [0-9]+	 				                            {yylval.string=strdup(yytext); return NUM;}
-"("                                                 {yylval.string=strdup(yytext); return LPAREN}
-")"                                                 {yylval.string=strdup(yytext); return RPAREN}
-"{"                                                 {yylval.string=strdup(yytext); return LBRACE}
-"}"                                                 {yylval.string=strdup(yytext); return RBRACE}
-"["                                                 {yylval.string=strdup(yytext); return LBRACKET}
-"]"                                                 {yylval.string=strdup(yytext); return RBRACKET}
-","                                                 {yylval.string=strdup(yytext); return COMMA}
-";"                                                 {yylval.string=strdup(yytext); return SEMICOLON}
+"("                                                 {yylval.string=strdup(yytext); return LPAREN;}
+")"                                                 {yylval.string=strdup(yytext); return RPAREN;}
+"{"                                                 {yylval.string=strdup(yytext); return LBRACE;}
+"}"                                                 {yylval.string=strdup(yytext); return RBRACE;}
+"["                                                 {yylval.string=strdup(yytext); return LBRACKET;}
+"]"                                                 {yylval.string=strdup(yytext); return RBRACKET;}
+","                                                 {yylval.string=strdup(yytext); return COMMA;}
+";"                                                 {yylval.string=strdup(yytext); return SEMICOLON;}
 \n 		                 	   	 			        yylineno ++;
 \/\/.*|\/\*.*\*\/							        /* ignore commnets */
 [ \t]+   		               					    /* ignore whitespace */
