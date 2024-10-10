@@ -8,7 +8,6 @@ typedef struct NODE NODE;
 %}
 
 %%
-// todo: change actions if you need
 
 #define								                {yylval.string=strdup(yytext); return DEFINE;}
 int									                {yylval.string=strdup(yytext); return INT;}

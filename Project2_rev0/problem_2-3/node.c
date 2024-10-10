@@ -80,35 +80,35 @@ void WalkTree(NODE* node) {
     }
 }
 
-int main() {
-    // 그림 3과 같은 파스 트리 구성
+// int main() {
+//     // 그림 3과 같은 파스 트리 구성
 
-    // 루트 노드 A 생성
-    NODE* A = MakeNode("A");
+//     // 루트 노드 A 생성
+//     NODE* A = MakeNode("A");
 
-    // A의 자식 B, E, I 생성 및 추가
-    NODE* B = MakeNode("B");
-    NODE* E = MakeNode("E");
-    NODE* I = MakeNode("I");
-    InsertChild(A, B);
-    InsertChild(A, E);
-    InsertChild(A, I);
+//     // A의 자식 B, E, I 생성 및 추가
+//     NODE* B = MakeNode("B");
+//     NODE* E = MakeNode("E");
+//     NODE* I = MakeNode("I");
+//     InsertChild(A, B);
+//     InsertChild(A, E);
+//     InsertChild(A, I);
 
-    // B의 자식 C, D 추가
-    NODE* C = MakeNode("C");
-    NODE* D = MakeNode("D");
-    InsertChild(B, C);
-    InsertChild(B, D);
+//     // B의 자식 C, D 추가
+//     NODE* C = MakeNode("C");
+//     NODE* D = MakeNode("D");
+//     InsertChild(B, C);
+//     InsertChild(B, D);
 
-    // E의 자식 F, G, H 생성 및 추가
-    NODE* F = MakeNode("F");
-    NODE* G = MakeNode("G");
-    NODE* H = MakeNode("H");
-    InsertChild(E, F);
-    InsertChild(E, G);
-    InsertChild(E, H);
+//     // E의 자식 F, G, H 생성 및 추가
+//     NODE* F = MakeNode("F");
+//     NODE* G = MakeNode("G");
+//     NODE* H = MakeNode("H");
+//     InsertChild(E, F);
+//     InsertChild(E, G);
+//     InsertChild(E, H);
 
-    WalkTree(A);
+//     WalkTree(A);
 
-    return 0;
-}
+//     return 0;
+// }
