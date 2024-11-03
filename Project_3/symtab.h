@@ -295,7 +295,6 @@ void TreeRetrieve(SYMTAB* symtab, NODE* node) {
         }
 
 		AddSymTab(symtab, functab);
-		PrintSymTab(symtab);
     }
 
     // 자식 노드로 재귀 호출
@@ -311,24 +310,142 @@ void TreeRetrieve(SYMTAB* symtab, NODE* node) {
 //  PROBLEM2
 // Do scope-analysis for every variables in the code
 // for detecting undefined variables
-void ScopeAnalysis(SYMTAB* symtab, NODE* node) {
-	//node를 bfs 탐색
-	//var 발견시, FindSymbol 함수 사용
-	//찾지 못했다면 에러발생
+
+void ScopeAnalysis(SYMTAB* symtab, NODE* node);
+
+void ScopeIn(SYMTAB* scopetab, NODE* node) {
+    if (scopetab->num_child > 0) {
+        SYMTAB* childtab = scopetab->child[0];  // 하위 스코프로 이동
+        // printf("Entering new scope, first symbol: %s\n", childtab->num_entry > 0 ? childtab->entry[0]->name : "No symbols");
+        
+        // 하위 스코프에서만 탐색 수행
+        ScopeAnalysis(childtab, node);
+    }
 }
 
+void ScopeAnalysis(SYMTAB* scopetab, NODE* node) {
+    if (node == NULL) return;
 
+    // 변수 노드인 경우 현재 스코프에서 심볼 탐색
+    if (strcmp(node->name, "variable") == 0 && strncmp(node->child->name, "ID: ", 4) == 0) {
+        if (FindSymbol(scopetab, node->child->name + 4) == NULL) {
+            printf("Undefined Error (%s)\n", node->child->name + 4);
+            exit(1);  // 프로그램 종료
+        }
+    }
+
+    // 스코프 진입 조건 확인 후 ScopeIn 실행
+    if ((strcmp(node->name, "func_arg_dec") == 0 || strcmp(node->name, "FOR: for") == 0) && scopetab->num_child > 0) {
+        ScopeIn(scopetab, node);  // 하위 스코프 진입
+        return;  // 상위 스코프 탐색 종료
+    }
+
+    // 현재 스코프에서 자식 노드 DFS 탐색
+    if (node->child != NULL) {
+        ScopeAnalysis(scopetab, node->child);  // 현재 scopetab을 유지하며 자식 탐색
+    }
+
+    // 현재 스코프에서 형제 노드 DFS 탐색
+    if (node->next != NULL) {
+        ScopeAnalysis(scopetab, node->next);  // 현재 scopetab을 유지하며 형제 탐색
+    }
+}
+
+int AL_exprTypeDerivation(SYMTAB* symtab, NODE* node){
+    if (strncmp(node->name, "NUM: ", 5) == 0){
+        return 1;
+    }
+    if(strcmp(node->name, "LBRACKET: [")){
+        //variable찾기
+        //variable이라면 심볼테이블에서 찾아서 타입리턴
+        char* varName = FindName(node->prev);
+        SYMBOL* varsym = FindSymbol(symtab, varName);
+        printf("variable name: %s, variable type: %d\n", varsym->name, varsym->type[0]);
+        return varsym->type[0];
+    }
+    if(strcmp(node->next->name, "OP_MUL: *") ==0 ||strcmp(node->next->name, "OP_ADD: +") ==0){
+        //근데이제 덧셈곱셈있다면
+        // 타입연산해야함...
+        int left = AL_exprTypeDerivation(symtab, node);
+        int right = AL_exprTypeDerivation(symtab, node->next->next);
+        printf("left type: %d, right type: %d\n", left, right);
+        return (left > right) ? left : right;
+    }
+        // 자식 노드로 재귀 호출
+    if (node->child != NULL) {
+        AL_exprTypeDerivation(symtab, node->child);
+    }
+
+    // 형제 노드로 재귀 호출
+    if (node->next != NULL) {
+        AL_exprTypeDerivation(symtab, node->next);
+    }
+}
+
+int VariableType(SYMTAB* symtab, NODE* node){
+	char* varName = FindName(node);
+    SYMBOL* varsym = FindSymbol(symtab, varName);
+    return varsym->type[0];
+}
 //  PROBLEM3
 // Do type-analysis for every arithmetic & logic expressions in the code
 // for detecting type error
 // 1. array index should be integer
 // 2. float number cannot be stored in integer variable
+
+
+SYMTAB* SymtabInitialize(SYMTAB* symtab) {
+    // 현재 symtab의 child가 없는 경우
+    if (symtab->num_child == 0) {
+        return symtab;  // child가 없으므로 리턴
+    }
+    if (symtab->child[0] != NULL) {
+        SymtabInitialize(symtab->child[0]);  // 재귀 호출
+    }
+}
+
 void TypeAnalysis(SYMTAB* symtab, NODE* node) {
 	//TODO
-	//node를 bfs 탐색
-	//var 발견시 FindSymbol 함수 사용
-	//리턴된 심볼의 type이 var의 type과 일치하는지 확인
-	//아니라면 에러발생
+	
+	if(strcmp(node->name, "assign_stmt")==0 && strcmp(node->child->next->name, "OP_ASSIGN")==0) {
+		NODE* left = node->child;
+		NODE* right = node->child->next->next;
+		int left_type = VariableType(symtab, left);
+		int right_type = AL_exprTypeDerivation(symtab, right);
+		//할당 연산자 확인해서 symboltable을 기반, left,right 타입 일치여부 확인
+		//op assign이 있다면, 왼쪽 symbol의 type, 오른쪽 symbol의 type을 확인한다.
+		if (right_type > left_type) {  // float을 int에 저장하려는 경우
+            printf("float cannot be stored in int variable\n");
+            exit(1);  // 프로그램 종료
+        }
+	}
+
+	if (strcmp(node->name, "al_expr")==0 && strcmp(node->child->name, "variable")==0){
+        char* varName = FindName(node->child);
+        SYMBOL* varsym = FindSymbol(symtab, varName);
+        if (varsym->type[0] != 1){
+            printf("float number cannot be stored in integer variable!\n");
+            exit(1);  // 프로그램 종료
+        }
+		//findnode-type
+		//if not int -> 에러출력
+	}
+	//al_expr->variable이 int인지 symboltable에서 확인.
+    // 자식 노드로 재귀 호출
+    if (node->child != NULL) {
+        TypeAnalysis(symtab, node->child);
+    }
+
+    // 형제 노드로 재귀 호출
+    if (node->next != NULL) {
+        TypeAnalysis(symtab, node->next);
+    }
 }
+
+void TypeAnalysisStart(SYMTAB* symtab, NODE* node){
+    SYMTAB* childtab = SymtabInitialize(symtab);
+    TypeAnalysis(childtab, node);
+}
+
 
 #endif
