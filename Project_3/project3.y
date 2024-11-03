@@ -586,10 +586,11 @@ int main(int argc, char **argv )
 	//todo: print tree
 	/* WalkTree(head); */
 	SYMTAB* symtab = NewSymTab();
-  	printf("yes");
-	ConstructSymTab(symtab, head);
-	/* PrintSymTab(symtab); */
-
+  	//printf("yes");
+	TreeRetrieve(symtab, head);
+	PrintSymTab(symtab);
+	ScopeAnalysis(symtab, head);
+	TypeAnalysisStart(symtab, head);
 	return 0;
 }
 
