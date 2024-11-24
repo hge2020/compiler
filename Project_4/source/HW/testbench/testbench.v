@@ -49,7 +49,7 @@ integer               start;
 reg [31:0]   in_inst[0:TRACE_SIZE-1];
 
 initial begin
-  file_decsriptor = $fopen("input_inst.dat", "r");
+  file_decsriptor = $fopen("C:/Users/handspc2/Downloads/ge/compiler/Project_4/hexfile/edited/out.hex", "r");
   if (file_decsriptor == `NULL) begin
     $display("file_decsriptor was NULL");
     $finish;
@@ -95,7 +95,7 @@ UUT_RISCV_SOC
 //  debugging variables
 //==========================
 integer     j, cycle_tick;
-reg[31:0]   debug_req_retired_temp;
+reg [31:0]   debug_req_retired_temp;
 integer     retired_inst_cnt;
 
 wire        debug_branch_taken_w;
@@ -160,23 +160,23 @@ initial begin
      wait_clocks(1);
 
     if (cycle_tick == 0) begin
-        debug_req_retired_temp[31:0] = debug_req_retired[31:0];
+        debug_req_retired_temp[31:0] = debug_req_retired;
     end
     if (debug_req_retired_temp != debug_req_retired) begin
       retired_inst_cnt = retired_inst_cnt + 1;
-      debug_req_retired_temp[31:0] = debug_req_retired[31:0];
+      debug_req_retired_temp[31:0] = debug_req_retired;
     end
 
-    if (debug_PC_w == 32'h0000_0000) begin  // TODO: start PC of conv
+    if (debug_PC_w == 32'h0000_0170) begin  // TODO: start PC of conv
         $display("CONV start!");
         retired_inst_cnt = 0;
     end
-    if (debug_PC_w == 32'h0000_0000) begin  // TODO: end PC of conv
+    if (debug_PC_w == 32'h0000_0264) begin  // TODO: end PC of conv
         $display("CONV end!");
         $display("Retired instruction count: %d", retired_inst_cnt);
     end
 
-    if (debug_PC_w == 32'h0000_0000) begin  // TODO: end PC of program
+    if (debug_PC_w == 32'h0000_016c) begin  // TODO: end PC of program
         wait_clocks(50);
         $finish();
     end

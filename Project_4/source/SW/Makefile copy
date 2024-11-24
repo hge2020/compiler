@@ -1,0 +1,49 @@
+#  
+#  COMMIT (Compiler & Micro-architecture)
+#
+
+    HOME=/home/compiler/work/riscv-gnu-toolchain/riscv
+    LLVM=/home/compiler/work/llvm-project/build/bin
+    RV=home/compiler/work/riscv-gnu-toolchain/riscv/bin
+    AS=home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-as
+    LD=home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-ld
+    CLANG=/home/compiler/work/llvm-project/build/bin/clang
+	CC=/home/compiler/work/llvm-project/build/bin/llc
+    OPT=/home/compiler/work/llvm-project/build/bin/opt
+    OBJDUMP=home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-objdump
+    OBJCOPY=home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-objcopy
+    ASFLAGS= -g -march=rv32im
+    LDFLAGS= -N -X -T sections.lds
+    CCFLAGS= -S -emit-llvm
+    TARGET=riscv32
+    MARCH=rv32im
+    FEATURE=+m
+    OPTLEVEL=0
+    SRC=conv
+    OPT_SRC=conv
+
+
+    all: main_code 
+
+    #############################
+    ####  Test 1
+    #############################
+
+    main_code: conv.o init.o
+	home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-ld -N -X -T sections.lds init.o conv.o -o out 
+	home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-objdump -D  out > out.dump
+	home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-objcopy -O  binary out out.bin
+	./bin2hex_out.perl > out.hex
+
+    conv.o: conv.c
+	/home/compiler/work/llvm-project/build/bin/clang -S -emit-llvm -fno-builtin -march=rv32im -O0 --target=riscv32 conv.c
+	/home/compiler/work/llvm-project/build/bin/llc -mattr=+m conv.ll
+	home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-as -g -march=rv32im conv.s -o conv.o
+#	$(AS) $(ASFLAGS) -mabi=$(MABI) $(OPT_SRC).s -o $(OPT_SRC).o
+
+
+    init.o: init.S
+	home/compiler/work/riscv-gnu-toolchain/riscv/bin/riscv32-unknown-elf-as -g -march=rv32im init.S -o init.o
+
+    clean:
+	rm -rf *.o *.dump *.hex *.bin out *.ll *.s *.bc
